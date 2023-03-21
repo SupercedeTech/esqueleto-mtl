@@ -15,6 +15,7 @@ module Database.Esqueleto.Monad.Legacy
   , delete
   , update
   , renderQuerySelect
+  , ilike
   , P.deleteWhere
   , P.get
   , P.getBy
@@ -39,6 +40,7 @@ import Database.Esqueleto.Legacy hiding
   , delete
   , update
   , renderQuerySelect
+  , ilike
 
   -- Persistent re-exports
   , deleteWhere
@@ -79,3 +81,7 @@ update query = P.unsafeLiftSql "esqueleto-update" (E.update query)
 
 renderQuerySelect :: (P.MonadSqlQuery m, SqlSelect a r) => SqlQuery a -> m (Text, [PersistValue])
 renderQuerySelect query = P.unsafeLiftSql "esqueleto-renderQuerySelect" (E.renderQuerySelect query)
+
+infixl 2 `ilike`
+ilike :: SqlString s => SqlExpr (Value s) -> SqlExpr (Value s) -> SqlExpr (Value Bool)
+l `ilike` r = lower_ l `like` lower_ r

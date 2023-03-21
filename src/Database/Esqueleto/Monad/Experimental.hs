@@ -35,4 +35,5 @@ import Database.Esqueleto.Experimental hiding
   , selectFirst
   , updateWhere
   , renderQuerySelect
+  , ilike
   )
