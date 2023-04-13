@@ -57,17 +57,18 @@ import Database.Esqueleto.Legacy hiding
   , updateWhere
   )
 import qualified Database.Persist.Monad as P
+import Data.Void
 
 -- | Classy version of 'E.select'
-select :: (P.MonadSqlQuery m, SqlSelect a r) => SqlQuery a -> m [r]
+select :: (P.MonadSqlQuery m, SqlSelect a r, SafeToInsert Void) => SqlQuery a -> m [r]
 select query = P.unsafeLiftSql "esqueleto-select" (E.select query)
 
 -- | Classy version of 'E.selectOne'
-selectOne :: (P.MonadSqlQuery m, SqlSelect a r) => SqlQuery a -> m (Maybe r)
+selectOne :: (P.MonadSqlQuery m, SqlSelect a r, SafeToInsert Void) => SqlQuery a -> m (Maybe r)
 selectOne query = P.unsafeLiftSql "esqueleto-selectOne" (E.selectOne query)
 
 -- | Classy version of 'E.delete'
-delete :: (P.MonadSqlQuery m) => SqlQuery () -> m ()
+delete :: (P.MonadSqlQuery m, SafeToInsert Void) => SqlQuery () -> m ()
 delete query = P.unsafeLiftSql "esqueleto-delete" (E.delete query)
 
 -- | Classy version of 'E.update'
@@ -75,11 +76,12 @@ update ::
      ( P.MonadSqlQuery m
      , PersistEntity val
      , BackendCompatible SqlBackend (PersistEntityBackend val)
+     , SafeToInsert Void
      )
   => (SqlExpr (Entity val) -> SqlQuery ()) -> m ()
 update query = P.unsafeLiftSql "esqueleto-update" (E.update query)
 
-renderQuerySelect :: (P.MonadSqlQuery m, SqlSelect a r) => SqlQuery a -> m (Text, [PersistValue])
+renderQuerySelect :: (P.MonadSqlQuery m, SqlSelect a r, SafeToInsert Void) => SqlQuery a -> m (Text, [PersistValue])
 renderQuerySelect query = P.unsafeLiftSql "esqueleto-renderQuerySelect" (E.renderQuerySelect query)
 
 infixl 2 `ilike`
